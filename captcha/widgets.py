@@ -11,7 +11,7 @@ from .client import API_SERVER, WIDGET_TEMPLATE
 
 
 class ReCaptcha(forms.widgets.Widget):
-    if getattr(settings, 'NOCAPTCHA', False):
+    if getattr(settings, 'NOCAPTCHA', False) or getattr(settings, 'INVISIBLE_RECAPTCHA', False):
         recaptcha_response_name = 'g-recaptcha-response'
         recaptcha_challenge_name = 'g-recaptcha-response'
     else:
@@ -57,6 +57,18 @@ class ReCaptcha(forms.widgets.Widget):
                     "attrs": self.build_attrs(attrs)
                 }
             }
+
+        if getattr(settings, 'INVISIBLE_RECAPTCHA', False):
+            if 'id' in attrs:
+                context['id_for_label'] = attrs.pop('id')
+            else:
+                context['id_for_label'] = 'id_captcha'
+            js_id = context['id_for_label'].replace('-', '_')
+            if 'callback' not in attrs:
+                context['callback'] = 'Recaptcha%s' % js_id
+            if 'onload_callback' not in attrs:
+                context['onload_callback'] = 'RecaptchaOnload%s' % js_id
+
         context.update({
             'api_server': API_SERVER,
             'public_key': self.public_key,
