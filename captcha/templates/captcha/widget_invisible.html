@@ -51,6 +51,7 @@
                         e.preventDefault();
                         grecaptcha.execute(widget_id);
                     }
+                    window.{{ onload_callback }}_submit = {{ onload_callback }}_submit;
                     form.addEventListener('submit', {{ onload_callback }}_submit);
                 }else{
                     grecaptcha.execute(widget_id);
